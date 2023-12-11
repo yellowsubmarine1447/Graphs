@@ -1,0 +1,1 @@
+pub(crate) const MAX_THREADS: usize = 8;

@@ -52,8 +52,8 @@ where
         self.size - 1
     }
 
-    pub fn get_node_number(&self, u: T) -> usize {
-        self.to_num[&u]
+    pub fn get_node_number(&self, u: T) -> Option<&usize> {
+        self.to_num.get(&u)
     }
 
     pub fn get_node_value(&self, u: usize) -> &T {

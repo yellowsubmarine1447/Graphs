@@ -1,11 +1,14 @@
-use {crate::graph::UndirectedGraph, std::hash::Hash, bitvec::{bitvec, vec::BitVec}};
-use std::sync::{Arc, RwLock};
+use std::{
+    hash::Hash, 
+    sync::{Arc, RwLock}
+};
+use bitvec::{bitvec, vec::BitVec};
+use threadpool::ThreadPool;
 use threadpool_scope::scope_with;
 
 
-use threadpool::ThreadPool;
-
-const MAX_THREADS: usize = 8;
+use crate::graph::UndirectedGraph;
+use crate::constants::MAX_THREADS;
 
 pub fn dfs<T, F: Fn(&T)>(graph: &UndirectedGraph<T>, start: T, process: F)
 where
@@ -14,7 +17,7 @@ where
     T: Eq,
 {
     let mut seen = bitvec![0; graph.size];
-    let node = graph.get_node_number(start);
+    let node = *graph.get_node_number(start).expect("Start node does not exist in graph");
     dfs_helper(graph, node, &mut seen, &process);
 }
 
@@ -41,7 +44,7 @@ where
     T: Sync,
 {
     let seen = bitvec![0; graph.size];
-    let node = graph.get_node_number(start);
+    let node = *graph.get_node_number(start).expect("Start node does not exist in graph");
     let pool = ThreadPool::new(MAX_THREADS);
     threaded_dfs_helper(graph, node, Arc::new(RwLock::new(seen)), &process, &pool);
 }
